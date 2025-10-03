@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Push Up Progress</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <!-- SweetAlert2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+  <!-- SweetAlert2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    body { background: #f8f9fa; }
+    .hidden { display: none; }
+    .quote { font-style: italic; color: #555; }
+    .exercise-card { min-height: 100%; }
+
+    /* Full-page loader overlay */
+    #loaderOverlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: #fff;
+      font-size: 1.2rem;
+    }
+
+    #loaderOverlay .spinner {
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #007bff;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 10px;
+    }
+
+    /* Floating label with icons fix */
+    .form-floating input {
+      padding-left: 2.2rem !important;
+    }
+    .form-floating label {
+      left: 2.2rem;
+    }
+
+    /* Motivational Quotes Styling */
+    #motivation {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #0d6efd;
+      text-align: center;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+      transition: opacity 0.8s ease-in-out;
+    }
+    #motivation.highlight {
+      color: #dc3545;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 576px) {
+      h2, h3, h4 { font-size: 1.2rem; }
+      h5 { font-size: 1rem; }
+      .input-group input { font-size: 0.9rem; }
+      .btn { font-size: 0.85rem; padding: 0.4rem 0.6rem; }
+    }
+    /* Ensure header is always on top */
+    .sticky-top {
+      position: sticky;
+      top: 0;
+    }
+
+    /* Smooth width transition for progress bar */
+    #scrollProgress {
+      transition: width 0.2s ease-out;
+    }
+    .slideshow-img {
+    width: 100%;
+    height: 300px;  /* Adjust to match your calendar’s visible height */
+    object-fit: contain; /* keeps full image visible without distortion */
+    border-radius: 8px;
+    background: #fff; /* optional: gives clean background if aspect ratio differs */
+  }
+
+  .calendar-table td {
+    height: 50px;
+    vertical-align: middle;
+  }
+
+  .day-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    font-weight: 600;
+  }
+
+  .legend-box {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    margin-right: 4px;
+  }
+
+
+  </style>
+</head>
+<body>
+
+<div id="loaderOverlay">
+  <div class="spinner"></div>
+  Logging in...
+</div>
+
+<div class="container-fluid py-3">
+
+  <!-- Login Page -->
+<div id="loginPage" class="row justify-content-center">
+  <div class="col-12 col-sm-10 col-md-6">
+    <div class="card shadow">
+      <div class="card-body">
+        <h3 class="card-title mb-3 text-center">Push Up Progress — Login</h3>
+        
+        <!-- Username Field -->
+        <div class="form-floating mb-3 position-relative">
+          <span class="position-absolute top-50 translate-middle-y ms-3 text-muted">
+            <i class="bi bi-person"></i>
+          </span>
+          <input type="text" id="username" class="form-control ps-5" placeholder="Username">
+          <label for="username">Username</label>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-floating mb-3 position-relative">
+          <span class="position-absolute top-50 translate-middle-y ms-3 text-muted">
+            <i class="bi bi-lock"></i>
+          </span>
+          <input type="password" id="password" class="form-control ps-5" placeholder="Password">
+          <label for="password">Password</label>
+          <button type="button"
+                  class="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2"
+                  onclick="togglePassword()"
+                  style="border:none; background:transparent;">
+            <i id="eyeIcon" class="bi bi-eye"></i>
+          </button>
+        </div>
+
+        <!-- Login Button -->
+        <button id="loginBtn" class="btn btn-primary w-100" onclick="login()">Login</button>
+        <p id="loginError" class="text-danger mt-3 text-center"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="hidden">
+    <!-- Dashboard Header -->
+    <!-- Sticky Header with Progress Bar -->
+<div id="dashboardHeader" class="sticky-top shadow-sm" style="z-index: 1030;">
+  <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center p-3 mb-0 rounded"
+       style="background: linear-gradient(90deg, #007bff, #6610f2); color: #fff;">
+
+    <h2 class="mb-2 mb-sm-0 fw-bold">
+      🚀 Push Up Progress Dashboard
+    </h2>
+
+    <div class="d-flex gap-2">
+      <button class="btn btn-light btn-sm px-3 shadow-sm" onclick="logout()">
+        <i class="bi bi-box-arrow-right me-1"></i> Logout
+      </button>
+      <button class="btn btn-warning btn-sm px-3 shadow-sm" onclick="resetProgress()">
+        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+      </button>
+    </div>
+  </div>
+
+  <!-- Scroll Progress Bar -->
+  <div class="progress" style="height: 5px; margin:0;">
+    <div id="scrollProgress" class="progress-bar bg-success" role="progressbar" style="width:0%"></div>
+  </div>
+</div>
+
+
+    <div class="alert alert-info small text-center">
+      <span id="motivation" class="quote"></span>
+    </div>
+
+    <div id="statsSection" class="mb-4"></div>
+    <div id="masteredSection"></div>
+    <div id="levelSection"></div>
+    
+    <div class="row">
+      <!-- Calendar Column -->
+      <div class="col-md-6">
+        <h5>Workout Streak Calendar</h5>
+        <div id="calendar" class="mb-4 d-flex flex-wrap gap-1"></div>
+      </div>
+
+      <!-- Slideshow Column -->
+      <div class="col-md-6">
+        <h5>Motivation</h5>
+        <div id="slideshow" class="card shadow-sm">
+          <div class="card-body text-center">
+            <img id="slideshow-img" src="images/first.png" class="img-fluid rounded" alt="Slideshow">
+          </div>
+        </div>
+      </div>
+  </div>
+
+    <h4 class="mt-4">Workout Logs</h4>
+    <div id="logs" class="mb-5"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const CREDENTIALS = { username: "user", password: "pushmaster" };
+const QUOTES = [
+  "🔥 Every rep takes you closer to greatness!",
+  "💪 Discipline today, strength tomorrow.",
+  "🚀 Push harder than yesterday if you want a different tomorrow.",
+  "⏳ Consistency beats motivation — show up daily!",
+  "🏆 Champions are built, not born.",
+  "🙌 Your only competition is who you were yesterday.",
+  "⚡ Strength doesn’t come from what you can do, it comes from overcoming the impossible.",
+  "🦾 One more pushup = one step stronger.",
+  "🌟 Small progress is still progress. Keep going!",
+  "💥 Sweat now, shine later.",
+  "🏋️‍♂️ Pain is temporary, pride is forever.",
+  "⚡ Push beyond limits and surprises await!",
+  "🔥 Every drop of sweat is a step closer to mastery.",
+  "💪 Stronger every day, one rep at a time.",
+  "🏆 Don’t count the reps, make the reps count.",
+  "🚀 Your body can stand almost anything — it’s your mind you have to convince.",
+  "🌟 Success starts with showing up, even when it’s tough.",
+  "🦾 Push, persist, prevail.",
+  "💥 No shortcuts. Only hard work and dedication.",
+  "🔥 Today’s pain is tomorrow’s power.",
+  "💪 Strength grows in the moments you think you can’t go on but do.",
+  "⚡ The harder you push, the higher you rise.",
+  "🏆 Every mastered push-up is a victory over laziness.",
+  "🙌 Champions train when no one is watching.",
+  "🚀 One push-up today, a hundred tomorrow.",
+  "🌟 Focus, sweat, repeat.",
+  "💥 Your limits are only in your mind.",
+  "🦾 Pain is the alarm clock to greatness.",
+  "🔥 Struggle today, flex tomorrow.",
+  "💪 You don’t find willpower, you build it.",
+  "⚡ Push-ups don’t build only muscles, they build discipline.",
+  "🏆 Strength is earned rep by rep.",
+  "🙌 Every set is a step closer to your best self.",
+  "🚀 Don’t stop when it hurts, stop when you’re proud.",
+  "🌟 Hard work beats talent when talent doesn’t work hard.",
+  "💥 The only bad workout is the one you didn’t do.",
+  "🦾 Sweat, smile, repeat.",
+  "🔥 Your body can do it. Your mind has to convince you.",
+  "💪 Reps build resilience.",
+  "⚡ Mastery comes from repetition.",
+  "🏆 Today’s effort = tomorrow’s results.",
+  "🙌 Push-ups today, victories tomorrow.",
+  "🚀 Turn excuses into push-ups.",
+  "🌟 Fitness is the reward, consistency is the key.",
+  "💥 Strength is built when you refuse to quit.",
+  "🦾 One more set, one step stronger.",
+  "🔥 Don’t wait for motivation. Create it.",
+  "💪 Challenge yourself or remain the same.",
+  "⚡ Sweat is the body’s applause for effort.",
+  "🏆 Train insane or remain the same.",
+  "🙌 Discipline > motivation, every time.",
+  "🚀 The road to strength is paved with push-ups.",
+  "🌟 Push past fatigue, greatness awaits.",
+  "💥 One rep closer to the best version of yourself."
+];
+
+const LEVELS = [
+  {
+    name: "Beginner (Foundation)",
+    criteria: "Start here if you’re new. Goal: build base strength with perfect form.",
+    exercises: [
+      {
+        id: "wall",
+        title: "Wall Push-Up",
+        notes: "Stand arm’s length from wall, push chest to wall and back. Great first step. (Goal: 2×15 reps)",
+        video: "https://youtu.be/YB0egDzsu18?si=H31k22ueaPzYro1Q"
+      },
+      {
+        id: "incline",
+        title: "Incline Push-Up",
+        notes: "Hands on elevated surface (bench/table). Easier than floor push-ups. (Goal: 2×15 reps)",
+        video: "https://youtu.be/Me9bHFAxnCs?si=YAEhy4vhAkp1PWh_"
+      },
+      {
+        id: "knee",
+        title: "Knee Push-Up",
+        notes: "Knees on floor, straight line head-to-knees, lower chest fully. (Goal: 3×15 reps with perfect form)",
+        video: "https://youtu.be/bwWlK8f1-NM?si=Ud2vK2vaGgkt48dv"
+      }
+    ]
+  },
+  {
+    name: "Standard (Novice)",
+    criteria: "Move on when you can do 3×12 knee/incline pushups with form.",
+    exercises: [
+      {
+        id: "slow",
+        title: "Slow Eccentric Push-Up",
+        notes: "Lower slowly (3–5 seconds), then push up normally. Builds control. (Goal: 3×12 reps slowly)",
+        video: "https://youtu.be/DP7yVuyfcSY?si=rCwOKrf8-88TdseR"
+      },
+      {
+        id: "standard",
+        title: "Standard Push-Up",
+        notes: "Hands shoulder-width, core tight, chest to floor, lock elbows at top. (Goal: 3×12 reps)",
+        video: "https://youtu.be/IODxDxX7oi4?si=5YXZGhEznG41oG7D"
+      },
+      {
+        id: "wide",
+        title: "Wide Push-Up",
+        notes: "Hands placed wider than shoulders. Hits outer chest. (Goal: 3×12 reps)",
+        video: "https://youtu.be/m3FTgWtJsFE?si=8VqQ7ashc9fC1K-w"
+      },
+      {
+        id: "close",
+        title: "Close-Grip Push-Up",
+        notes: "Hands under chest, triceps focus. Elbows stay close to body. (Goal: 3×12 reps)",
+        video: "https://youtu.be/aWixj7ey758?si=PqMTvoFZPqDIL1-V"
+      }
+    ]
+  },
+  {
+    name: "Intermediate",
+    criteria: "Strong in standard form. Start exploring harder variations.",
+    exercises: [
+      {
+        id: "kneediamond",
+        title: "Knee Diamond Push-Up",
+        notes: "Hands form a diamond under chest. Intense triceps/inner chest work. (Goal: 3×10 reps)",
+        video: "https://youtu.be/dmoHFWt-Mms?si=pz2tWGyfqU-P0_zg"
+      },
+      {
+        id: "diamond",
+        title: "Diamond Push-Up",
+        notes: "Hands form a diamond under chest. Intense triceps/inner chest work. (Goal: 3×12 reps)",
+        video: "https://youtu.be/UCmqw3kKZ38?si=g-wcfh80D3wO9LDu"
+      },
+      {
+        id: "decline",
+        title: "Decline Push-Up",
+        notes: "Feet elevated. Increases difficulty and targets upper chest. (Goal: 3×10 reps)",
+        video: "https://youtu.be/OjPfLfLsw3c?si=khZ8Q0rpbKktl2QB"
+      },
+      {
+        id: "archer",
+        title: "Archer Push-Up",
+        notes: "One arm bends while the other stays straight. Builds one-arm strength. (Goal: 3×8 reps per side)",
+        video: "https://youtu.be/OVRBYrjszy4?si=1W4DPXMnHcdbIpqa"
+      },
+      {
+        id: "pseudo",
+        title: "Pseudo Planche Push-Up",
+        notes: "Hands placed lower near waist, lean forward to increase difficulty. (Goal: 3×8 reps)",
+        video: "https://youtu.be/lpZUsYQVwuE?si=p8AfSIO_uCm4-phv"
+      },
+      {
+        id: "spiderman",
+        title: "Spiderman Push-Up",
+        notes: "Bring knee to elbow as you descend. Core + chest challenge. (Goal: 3×10 reps)",
+        video: "https://youtu.be/FbIrd0_4X1w?si=Tm1kOTGPPpck6Yb3"
+      }
+    ]
+  },
+  {
+    name: "Advanced",
+    criteria: "Push explosiveness, balance, and unilateral strength.",
+    exercises: [
+      {
+        id: "plyo",
+        title: "Plyometric (Clap) Push-Up",
+        notes: "Explosive push-off with clap. Power and fast-twitch muscles. (Goal: 3×8 reps)",
+        video: "https://youtu.be/FRo3b_Pfw3M?si=UXR_bnEWa_K9MAld"
+      },
+      {
+        id: "typewriter",
+        title: "Typewriter Push-Up",
+        notes: "Go down to one side, shift across, and push up. Archer + movement. (Goal: 3×6 reps per side)",
+        video: "https://youtu.be/OoFHIWmNM_A?si=qdQVJkkJmKLOIl-O"
+      },
+      {
+        id: "onearm",
+        title: "One-Arm Push-Up",
+        notes: "Work up with assisted, archer, and decline before strict form. (Goal: 3×5 reps per arm)",
+        video: "https://youtu.be/xvOoZ3SbKCw?si=upacRv1uwIz6JMzf"
+      },
+      {
+        id: "tigerbend",
+        title: "Tiger Bend Push-Up",
+        notes: "Start on forearms, press up into push-up. Triceps + shoulders burn. (Goal: 3×6 reps)",
+        video: "https://youtu.be/wjIZTDc-oZc?si=-0SmtifHfJnq0PHN"
+      },
+      {
+        id: "explosive",
+        title: "Explosive Superman Push-Up",
+        notes: "Launch fully off ground, extend arms forward. Very advanced. (Goal: 3×5 reps)",
+        video: "https://youtu.be/3UKg6j31OMI?si=qx-nFXfHeXgINmCK"
+      }
+    ]
+  },
+  {
+    name: "Elite",
+    criteria: "Master advanced variations, chase gymnastic-level control.",
+    exercises: [
+      {
+        id: "planche",
+        title: "Planche Push-Up",
+        notes: "Lean heavily forward until feet lift. Requires insane wrist/core strength. (Goal: 3×3 reps)",
+        video: "https://youtu.be/A9tJDvRcqjE?si=SXSs4rxMn0KYh0PE"
+      },
+      {
+        id: "handstand",
+        title: "Handstand Push-Up",
+        notes: "Do against a wall → then freestanding. Shoulders focus. (Goal: 3×3 reps)",
+        video: "https://youtu.be/pYx7CRs7kAM?si=F5eI4b0ibnGHqAdp"
+      },
+      {
+        id: "90degree",
+        title: "90-Degree Push-Up",
+        notes: "From handstand, lower into planche, then push back. Gymnast level. (Goal: 3×3 reps)",
+        video: "https://youtu.be/LH6acDN02Sw?si=9OQJ5RB_W1q8JzQz"
+      },
+      {
+        id: "aztec",
+        title: "Aztec Push-Up",
+        notes: "Explosive push → touch hands to feet mid-air. Extreme plyo skill. (Goal: 3×3 reps)",
+        video: "https://youtu.be/4zsi1xn33vM?si=Z0cVlzzoKKv0k7OQ"
+      },
+      {
+        id: "onearmhandstand",
+        title: "One-Arm Handstand Push-Up",
+        notes: "Peak balance + pushing strength. Final boss of push-ups. (Goal: 3×2 reps)",
+        video: "https://youtube.com/shorts/ZIxWt6kJ2XU?si=WcUkEE7_urUK1Diy"
+      }
+    ]
+  }
+];
+
+
+const MILESTONES = [
+  { id: "standard", condition: u => u.logs.some(l=>l.exercise==="standard"), text: "First Push-Up" },
+  { id: "100", condition: u => u.totalPushups >= 100, text: "100 Total Pushups" },
+  { id: "500", condition: u => u.totalPushups >= 500, text: "500 Total Pushups" },
+  { id: "1000", condition: u => u.totalPushups >= 1000, text: "1000 Total Pushups" },
+  { id: "5000", condition: u => u.totalPushups >= 5000, text: "5000 Total Pushups" },
+  { id: "10000", condition: u => u.totalPushups >= 10000, text: "10,000 Total Pushups" },
+  { id: "diamond", condition: u => u.logs.some(l=>l.exercise==="diamond"), text: "First Diamond Push-Up" },
+  { id: "onearm", condition: u => u.logs.some(l=>l.exercise==="onearm"), text: "First One-Arm Push-Up" },
+  { id: "handstand", condition: u => u.logs.some(l=>l.exercise==="handstand"), text: "First Handstand Push-Up" },
+  { id: "streak3", condition: u => u.streak >= 3, text: "3-Day Streak" },
+  { id: "streak7", condition: u => u.streak >= 7, text: "7-Day Streak" },
+  { id: "streak14", condition: u => u.streak >= 14, text: "2-Week Streak" },
+  { id: "streak30", condition: u => u.streak >= 30, text: "30-Day Streak" },
+  { id: "streak60", condition: u => u.streak >= 60, text: "60-Day Streak" },
+  { id: "streak100", condition: u => u.streak >= 100, text: "100-Day Streak 💯" },
+  { id: "streak365", condition: u => u.streak >= 365, text: "1-Year Daily Streak 🏆" }
+];
+
+// Define mastery thresholds per exercise
+const MASTERY_THRESHOLDS = {
+  wall:      { reps: 15, sets: 2 },
+  incline:   { reps: 15, sets: 2 },
+  knee:      { reps: 15, sets: 3 },
+  slow:      { reps: 12, sets: 3 },
+  standard:  { reps: 12, sets: 3 },
+  wide:      { reps: 12, sets: 3 },
+  close:     { reps: 12, sets: 3 },
+  kneediamond: { reps: 12, sets: 3 },
+  diamond:     { reps: 10, sets: 3 },
+  decline:     { reps: 10, sets: 3 },
+  archer:      { reps: 8, sets: 3 },
+  pseudo:      { reps: 8, sets: 3 },
+  spiderman:   { reps: 10, sets: 3 },
+  plyo:        { reps: 8, sets: 3 },
+  typewriter:  { reps: 6, sets: 3 },
+  onearm:      { reps: 5, sets: 3 },
+  tigerbend:   { reps: 6, sets: 3 },
+  explosive:   { reps: 5, sets: 3 },
+  planche:     { reps: 3, sets: 3 },
+  handstand:   { reps: 3, sets: 3 },
+  "90degree":  { reps: 3, sets: 3 },
+  aztec:       { reps: 3, sets: 3 },
+  onearmhandstand: { reps: 2, sets: 3 }
+};
+
+const images = [
+    "images/first.png",
+    "images/fivth.png",
+    "images/fourth.png",
+    "images/second.png",
+    "images/six.png",
+    "images/third.png"
+  ];
+
+  let currentIndex = 0;
+  const slideshowImg = document.getElementById("slideshow-img");
+
+  function showNextImage() {
+    currentIndex = (currentIndex + 1) % images.length;
+    slideshowImg.src = images[currentIndex];
+  }
+
+  // Auto change every 3 seconds
+  setInterval(showNextImage, 3000);
+
+// Add masteredExercises field
+let user = JSON.parse(localStorage.getItem("pushUser")) || { loggedIn:false, level:0, logs:[], totalPushups:0, streak:0, lastWorkoutDate:null, milestones:{}, masteredExercises:[] };
+
+function login() {
+  const u = document.getElementById("username").value.trim();
+  const p = document.getElementById("password").value.trim();
+  const loaderOverlay = document.getElementById("loaderOverlay");
+  const loginBtn = document.getElementById("loginBtn");
+  document.getElementById("loginError").textContent = "";
+
+  if(u === CREDENTIALS.username && p === CREDENTIALS.password){
+    loaderOverlay.style.display = "flex";
+    loginBtn.disabled = true;
+    setTimeout(()=>{
+      user.loggedIn = true;
+      saveUser();
+      loaderOverlay.style.display = "none";
+      loginBtn.disabled = false;
+      render();
+    }, 1200);
+  } else {
+    document.getElementById("loginError").textContent = "Invalid credentials.";
+  }
+}
+
+function logout(){ user.loggedIn=false; saveUser(); render(); }
+
+function logSession(exId){
+  const reps=parseInt(document.getElementById(`reps-${exId}`).value)||0;
+  const sets=parseInt(document.getElementById(`sets-${exId}`).value)||0;
+  if(reps && sets){
+    const total=reps*sets;
+    const today=new Date().toDateString();
+    user.logs.push({date:new Date().toISOString(),exercise:exId,reps,sets});
+    user.totalPushups+=total;
+    if(user.lastWorkoutDate===today){}
+    else if(user.lastWorkoutDate===new Date(Date.now()-86400000).toDateString()){ user.streak+=1; }
+    else{ user.streak=1; }
+    user.lastWorkoutDate=today;
+    checkMilestones();
+    checkMastery(exId, reps, sets);
+    saveUser();
+    renderLogs();
+    renderStats();
+    checkPromotion();
+  }
+}
+
+function checkMastery(exId, reps, sets){
+  const threshold = MASTERY_THRESHOLDS[exId];
+  if(!threshold) return; // safety fallback
+
+  // check if mastery achieved
+  if(reps >= threshold.reps && sets >= threshold.sets && !user.masteredExercises.includes(exId)){
+    user.masteredExercises.push(exId);
+
+    const ex = LEVELS.flatMap(lv => lv.exercises).find(e => e.id === exId);
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Mastered Push-Up!',
+      html: `🏆 You mastered: <strong>${ex ? ex.title : exId}</strong> push-up!<br>Keep progressing!`,
+      timer: 2500,
+      showConfirmButton: false
+    });
+
+    saveUser();
+    renderMastered();
+    renderLevel();
+  }
+}
+
+function togglePassword() {
+  const passwordInput = document.getElementById("password");
+  const eyeIcon = document.getElementById("eyeIcon");
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    eyeIcon.classList.remove("bi-eye");
+    eyeIcon.classList.add("bi-eye-slash");
+  } else {
+    passwordInput.type = "password";
+    eyeIcon.classList.remove("bi-eye-slash");
+    eyeIcon.classList.add("bi-eye");
+  }
+}
+
+function resetProgress(){ 
+  if(confirm("Reset all progress?")){
+    user={loggedIn:true,level:0,logs:[],totalPushups:0,streak:0,lastWorkoutDate:null,milestones:{},masteredExercises:[]};
+    saveUser(); render();
+  } 
+}
+
+function checkPromotion() {
+  const level = LEVELS[user.level];
+  const allExIds = level.exercises.map(e => e.id);
+  
+  // Check if all exercises in this level are mastered
+  const allMastered = allExIds.every(id => user.masteredExercises.includes(id));
+  
+  if (allMastered && user.level < LEVELS.length - 1) {
+    user.level++;
+    Swal.fire({
+      icon: 'success',
+      title: 'Level Up!',
+      text: `🎉 Congrats! You have been promoted to: ${LEVELS[user.level].name}`,
+      timer: 2500,         // auto-close after 2.5 seconds
+      showConfirmButton: false
+    });
+
+    saveUser();
+    render();
+  }
+}
+
+window.addEventListener("load", () => {
+  const calendarHeight = document.getElementById("calendar").offsetHeight;
+  document.getElementById("slideshow-img").style.height = calendarHeight + "px";
+});
+
+
+function checkMilestones() {
+  MILESTONES.forEach(ms => {
+    if (ms.condition(user) && !user.milestones[ms.id]) {
+      user.milestones[ms.id] = true;
+      Swal.fire({
+        icon: 'info',
+        title: 'Milestone Unlocked!',
+        text: `🏅 ${ms.text}`,
+        timer: 2000,
+        showConfirmButton: false
+      });
+    }
+  });
+}
+
+
+function render(){
+  document.getElementById("loginPage").classList.toggle("hidden", user.loggedIn);
+  document.getElementById("dashboard").classList.toggle("hidden", !user.loggedIn);
+  if(user.loggedIn){ renderMastered(); renderLevel(); renderLogs(); renderStats(); renderCalendar(); }
+}
+
+function renderMastered() {
+  if (!user.masteredExercises) user.masteredExercises = [];
+  const container = document.getElementById("masteredSection");
+
+  if (!user.masteredExercises.length) {
+    container.innerHTML = "";
+    return;
+  }
+
+  let html = `<div class="card mb-4 shadow-sm border-primary">
+    <div class="card-body">
+      <h4 class="mb-3 text-center text-primary fw-bold">🏅 Mastered Push-Ups</h4>
+      <div class="row g-3">`;
+
+  user.masteredExercises.forEach(id => {
+    const ex = LEVELS.flatMap(lv => lv.exercises).find(e => e.id === id);
+    if (ex) {
+      html += `
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 border-success shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title text-success fw-bold">${ex.title} <span class="badge bg-success float-end">Mastered</span></h5>
+              <p class="card-text text-muted small flex-grow-1">${ex.notes}</p>
+              <a href="${ex.video}" target="_blank" class="btn btn-outline-success btn-sm mt-2 align-self-start">
+                🎥 Watch Tutorial
+              </a>
+            </div>
+          </div>
+        </div>`;
+    }
+  });
+
+  html += `</div></div></div>`;
+  container.innerHTML = html;
+}
+
+
+
+function renderLevel() {
+  const level = LEVELS[user.level];
+  const exercisesToShow = level.exercises.filter(ex => !user.masteredExercises.includes(ex.id));
+  let html = `
+    <div class="card mb-4 shadow-sm border-info">
+      <div class="card-body">
+        <h4 class="mb-2 text-info fw-bold">${level.name}</h4>
+        <p class="small"><strong>Progression rule:</strong> ${level.criteria}</p>
+        <div class="row g-3">
+  `;
+
+  exercisesToShow.forEach(ex => {
+    html += `
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-primary">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title fw-bold">${ex.title}</h5>
+            <p class="card-text text-muted small flex-grow-1">${ex.notes}</p>
+            <a href="${ex.video}" target="_blank" class="btn btn-outline-primary btn-sm mt-2 align-self-start">
+              🎥 Tutorial
+            </a>
+            <div class="input-group input-group-sm mt-3">
+              <input type="number" id="sets-${ex.id}" class="form-control" placeholder="Sets">
+              <input type="number" id="reps-${ex.id}" class="form-control" placeholder="Reps">
+              <button class="btn btn-primary" onclick="logSession('${ex.id}')">Log</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `</div></div></div>`;
+  document.getElementById("levelSection").innerHTML = html;
+}
+
+
+function renderLogs() {
+  const todayStr = new Date().toDateString(); // e.g., "Wed Oct 01 2025"
+  // filter logs for today only
+  const todaysLogs = user.logs.filter(l => new Date(l.date).toDateString() === todayStr);
+
+  if (!todaysLogs.length) {
+    document.getElementById("logs").innerHTML = "<p class='text-muted small'>No logs yet for today.</p>";
+    return;
+  }
+
+  let html = `<div class="card mb-3 shadow-sm"><div class="card-body">
+                <h5>Today's Workout Logs — ${todayStr}</h5>
+                <ul class="list-group list-group-flush small">`;
+
+  todaysLogs.forEach(l => {
+    const ex = LEVELS.flatMap(lv => lv.exercises).find(e => e.id === l.exercise);
+    html += `<li class="list-group-item">${ex ? ex.title : l.exercise} — ${l.sets}×${l.reps}</li>`;
+  });
+
+  html += `</ul></div></div>`;
+  document.getElementById("logs").innerHTML = html;
+}
+
+window.addEventListener("scroll", () => {
+  const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+  const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const scrollPercent = (scrollTop / scrollHeight) * 100;
+  document.getElementById("scrollProgress").style.width = scrollPercent + "%";
+});
+
+
+function renderStats() {
+  const level = LEVELS[user.level];
+  const totalPushups = user.totalPushups || 0;
+  const streak = user.streak || 0;
+
+  // mastery-based progress calculation
+  const totalExercises = level.exercises.length;
+  const masteredCount = level.exercises.filter(ex => user.masteredExercises.includes(ex.id)).length;
+  const progressPercent = Math.round((masteredCount / totalExercises) * 100);
+
+  const nextLevel = user.level < LEVELS.length - 1 ? LEVELS[user.level + 1].name : "Maxed Out!";
+
+  let html = `
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <h5>Progress Overview</h5>
+        <p><strong>Total Pushups:</strong> ${totalPushups}</p>
+        <p><strong>Streak:</strong> 🔥 ${streak} day(s)</p>
+        <p><strong>Next Level:</strong> ${nextLevel}</p>
+        <div class="progress mb-2">
+          <div class="progress-bar bg-success" role="progressbar"
+               style="width:${progressPercent}%"
+               aria-valuenow="${progressPercent}" aria-valuemin="0" aria-valuemax="100">
+            ${progressPercent}%
+          </div>
+        </div>
+        <p class="small text-muted">${masteredCount}/${totalExercises} exercises mastered in this level</p>
+  `;
+
+  // show milestones only if unlocked
+  const unlocked = Object.keys(user.milestones).filter(id => user.milestones[id]);
+  if (unlocked.length) {
+    html += `<h6>Milestones:</h6><ul class="list-group small">`;
+    unlocked.forEach(id => {
+      const ms = MILESTONES.find(m => m.id === id);
+      if (ms) {
+        html += `<li class="list-group-item list-group-item-success">🏅 ${ms.text}</li>`;
+      }
+    });
+    html += `</ul>`;
+  }
+
+  html += `</div></div>`;
+  document.getElementById("statsSection").innerHTML = html;
+}
+
+function renderCalendar() {
+  const calendarEl = document.getElementById("calendar");
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+
+  const startDay = firstDay.getDay();
+  const totalDays = lastDay.getDate();
+
+  let html = `
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="mb-3 text-center">${now.toLocaleString("default", { month: "long" })} ${year}</h5>
+        <div class="table-responsive">
+          <table class="table table-bordered text-center">
+          <thead class="table-light">
+            <tr>
+              <th>Sun</th><th>Mon</th><th>Tue</th>
+              <th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+            </tr>
+          </thead>
+          <tbody>
+  `;
+
+  let day = 1;
+  for (let row = 0; row < 6; row++) {
+    html += "<tr>";
+    for (let col = 0; col < 7; col++) {
+      if (row === 0 && col < startDay) {
+        html += "<td></td>";
+      } else if (day > totalDays) {
+        html += "<td></td>";
+      } else {
+        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        const logged = user.logs.some(l => new Date(l.date).toDateString() === new Date(dateStr).toDateString());
+
+        html += `
+          <td>
+            <div class="day-circle ${logged ? 'bg-success' : 'bg-danger'} text-white">
+              ${day}
+            </div>
+          </td>`;
+        day++;
+      }
+    }
+    html += "</tr>";
+    if (day > totalDays) break;
+  }
+
+  html += `
+          </tbody>
+        </table>
+        <div class="d-flex justify-content-center gap-3 small mt-2">
+          <span><span class="legend-box bg-success"></span> Logged</span>
+          <span><span class="legend-box bg-danger"></span> Not Logged</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  calendarEl.innerHTML = html;
+}
+
+
+
+function saveUser(){ localStorage.setItem("pushUser",JSON.stringify(user)); }
+
+function rotateQuotes(){
+  let i=0;
+  const motivation=document.getElementById("motivation");
+  motivation.textContent=QUOTES[i];
+  setInterval(()=>{
+    motivation.style.opacity=0;
+    setTimeout(()=>{
+      motivation.textContent=QUOTES[i];
+      motivation.style.opacity=1;
+      if(i % 3 === 0) { motivation.classList.add("highlight"); }
+      else { motivation.classList.remove("highlight"); }
+      i=(i+1)%QUOTES.length;
+    },800);
+  },5000);
+}
+
+render();
+rotateQuotes();
+</script>
+</body>
+</html>
+
