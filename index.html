@@ -10,6 +10,10 @@
   <!-- SweetAlert2 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
   <!-- SweetAlert2 JS -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@400;600&family=Roboto+Slab:wght@600&display=swap" rel="stylesheet">
+
+
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
@@ -18,30 +22,83 @@
     .quote { font-style: italic; color: #555; }
     .exercise-card { min-height: 100%; }
 
-    /* Full-page loader overlay */
-    #loaderOverlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      z-index: 9999;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      color: #fff;
-      font-size: 1.2rem;
-    }
+   /* Full-page loader overlay */
+#loaderOverlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  display: none;
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: #fff;
+  font-family: 'Orbitron', sans-serif;
+  text-align: center;
+  padding: 20px;
+}
 
-    #loaderOverlay .spinner {
-      border: 5px solid #f3f3f3;
-      border-top: 5px solid #007bff;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-      margin-bottom: 10px;
-    }
+/* Circular pulse animation */
+#loaderOverlay .pulse-circle {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff6b6b, #feca57);
+  animation: pulse 1.5s infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.7; }
+}
+
+/* Striped progress bar */
+#loaderOverlay .progress {
+  width: 200px;
+  height: 12px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+#loaderOverlay .progress-bar {
+  width: 0%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    #06d6a0,
+    #06d6a0 10px,
+    #118ab2 10px,
+    #118ab2 20px
+  );
+  animation: loadStripe 2s linear infinite, loadGrow 5s ease forwards;
+}
+
+@keyframes loadStripe {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px 0; }
+}
+
+@keyframes loadGrow {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+/* Text animation */
+#loaderOverlay .loader-text {
+  font-size: 1.3rem;
+  font-weight: bold;
+  animation: textPulse 1.5s infinite;
+}
+
+@keyframes textPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
 
     /* Floating label with icons fix */
     .form-floating input {
@@ -51,19 +108,21 @@
       left: 2.2rem;
     }
 
-    /* Motivational Quotes Styling */
     #motivation {
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: #0d6efd;
-      text-align: center;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-      transition: opacity 0.8s ease-in-out;
-    }
-    #motivation.highlight {
-      color: #dc3545;
-      animation: pulse 1.5s infinite;
-    }
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 10px 0;
+  transition: opacity 0.8s ease;
+  color: #333;
+}
+
+#motivation.highlight {
+  color: #e63946;
+  text-shadow: 0 0 8px rgba(230,57,70,0.6);
+}
+
 
     @keyframes pulse {
       0% { transform: scale(1); }
@@ -91,13 +150,40 @@
     #scrollProgress {
       transition: width 0.2s ease-out;
     }
-    .slideshow-img {
-    width: 100%;
-    height: 300px;  /* Adjust to match your calendar’s visible height */
-    object-fit: contain; /* keeps full image visible without distortion */
-    border-radius: 8px;
-    background: #fff; /* optional: gives clean background if aspect ratio differs */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
+
+.section-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #0072ff;
+  border-bottom: 3px solid #0072ff;
+  display: inline-block;
+  padding-bottom: 4px;
+}
+
+.calendar-wrapper {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 20px;
+}
+
+#slideshow {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: white;
+}
+
+#slideshow-img:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+@media (max-width: 767px) {
+  #slideshow-img {
+    max-height: 200px;
   }
+}
 
   .calendar-table td {
     height: 50px;
@@ -123,31 +209,97 @@
     margin-right: 4px;
   }
 
+/* Logout Loader Overlay */
+#logoutLoader {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  z-index: 10000;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: #fff;
+  font-family: 'Orbitron', sans-serif;
+  text-align: center;
+}
 
+#logoutLoader .cube {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #f77f00, #e63946);
+  animation: rotateCube 1.2s infinite ease-in-out;
+  transform-origin: center;
+  margin-bottom: 15px;
+}
+
+#logoutLoader .loader-text {
+  font-size: 1.2rem;
+  font-weight: bold;
+  animation: fadePulse 1.5s infinite;
+}
+
+@keyframes rotateCube {
+  0%, 100% { transform: rotateX(0deg) rotateY(0deg); }
+  25% { transform: rotateX(180deg) rotateY(0deg); }
+  50% { transform: rotateX(180deg) rotateY(180deg); }
+  75% { transform: rotateX(0deg) rotateY(180deg); }
+}
+
+@keyframes fadePulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
   </style>
 </head>
 <body>
 
 <div id="loaderOverlay">
-  <div class="spinner"></div>
-  Logging in...
+  <div class="pulse-circle"></div>
+  <div class="progress"><div class="progress-bar"></div></div>
+  <div class="loader-text">🔥 Getting You Ready...</div>
+</div>
+
+<div id="logoutLoader">
+  <div class="cube"></div>
+  <div class="loader-text">🚪 Logging you out...</div>
+</div>
+
+<div id="loader-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+  <div class="spinner" style="border:8px solid #f3f3f3; border-top:8px solid #06d6a0; border-radius:50%; width:60px; height:60px; animation:spin 1s linear infinite;"></div>
 </div>
 
 <div class="container-fluid py-3">
-
-  <!-- Login Page -->
-<div id="loginPage" class="row justify-content-center">
-  <div class="col-12 col-sm-10 col-md-6">
-    <div class="card shadow">
-      <div class="card-body">
-        <h3 class="card-title mb-3 text-center">Push Up Progress — Login</h3>
+<!-- Login Page -->
+<div id="loginPage" class="row justify-content-center align-items-center min-vh-100"
+     style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+            url('https://images.unsplash.com/photo-1605296867304-46d5465a13f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') 
+            center/cover no-repeat;">
+  <div class="col-12 col-sm-10 col-md-6 col-lg-4">
+    <div class="card shadow-lg border-0 rounded-4" style="background: rgba(255,255,255,0.9);">
+      <div class="card-body p-4">
+        
+        <!-- Title -->
+        <h2 class="text-center fw-bold mb-2" 
+            style="font-family: 'Orbitron', sans-serif; color:#e63946;">
+          Push Up Progress
+        </h2>
+        <p class="text-center text-muted fst-italic mb-4" style="font-size: 0.9rem;">
+          "You can You Will"
+        </p>
 
         <!-- Username Field -->
         <div class="form-floating mb-3 position-relative">
           <span class="position-absolute top-50 translate-middle-y ms-3 text-muted">
             <i class="bi bi-person"></i>
           </span>
-          <input type="text" id="username" class="form-control ps-5" placeholder="Username">
+          <input type="text" id="username" class="form-control ps-5 rounded-pill" placeholder="Username">
           <label for="username">Username</label>
         </div>
 
@@ -156,49 +308,67 @@
           <span class="position-absolute top-50 translate-middle-y ms-3 text-muted">
             <i class="bi bi-lock"></i>
           </span>
-          <input type="password" id="password" class="form-control ps-5" placeholder="Password">
+          <input type="password" id="password" class="form-control ps-5 rounded-pill" placeholder="Password">
           <label for="password">Password</label>
           <button type="button"
                   class="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2"
                   onclick="togglePassword()"
-                  style="border:none; background:transparent;">
+                  style="border:none; background:transparent; color:#e63946;">
             <i id="eyeIcon" class="bi bi-eye"></i>
           </button>
         </div>
 
         <!-- Login Button -->
-        <button id="loginBtn" class="btn btn-primary w-100" onclick="login()">Login</button>
-        <p id="loginError" class="text-danger mt-3 text-center"></p>
+        <button id="loginBtn" 
+                class="btn w-100 rounded-pill py-2 fw-bold text-white"
+                style="background: linear-gradient(45deg, #e63946, #f77f00); border:none;"
+                onclick="login()">
+          Login
+        </button>
+
+        <!-- Error Message -->
+        <p id="loginError" class="text-danger mt-2 text-center fw-bold"></p>
       </div>
     </div>
   </div>
 </div>
+
 
   <!-- Dashboard -->
   <div id="dashboard" class="hidden">
     <!-- Dashboard Header -->
     <!-- Sticky Header with Progress Bar -->
 <div id="dashboardHeader" class="sticky-top shadow-sm" style="z-index: 1030;">
+  <!-- Gradient Header -->
   <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center p-3 mb-0 rounded"
-       style="background: linear-gradient(90deg, #007bff, #6610f2); color: #fff;">
+       style="background: linear-gradient(90deg, #e63946, #f77f00); color: #fff; font-family: 'Orbitron', sans-serif;">
 
-    <h2 class="mb-2 mb-sm-0 fw-bold">
+    <!-- Title -->
+    <h2 class="mb-2 mb-sm-0 fw-bold text-center text-sm-start">
       🚀 Push Up Progress Dashboard
     </h2>
 
+    <!-- Buttons -->
     <div class="d-flex gap-2">
-      <button class="btn btn-light btn-sm px-3 shadow-sm" onclick="logout()">
+      <button class="btn btn-light btn-sm px-3 shadow-sm rounded-pill fw-bold" 
+              style="color:#e63946;"
+              onclick="logout()">
         <i class="bi bi-box-arrow-right me-1"></i> Logout
       </button>
-      <button class="btn btn-warning btn-sm px-3 shadow-sm" onclick="resetProgress()">
+      <button class="btn btn-sm px-3 shadow-sm rounded-pill fw-bold text-white"
+              style="background: linear-gradient(45deg, #f77f00, #ffba08); border:none;"
+              onclick="resetProgress()">
         <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
       </button>
     </div>
   </div>
 
   <!-- Scroll Progress Bar -->
-  <div class="progress" style="height: 5px; margin:0;">
-    <div id="scrollProgress" class="progress-bar bg-success" role="progressbar" style="width:0%"></div>
+  <div class="progress" style="height: 6px; margin:0; border-radius:0;">
+    <div id="scrollProgress" 
+         class="progress-bar" 
+         style="width:0%; background: linear-gradient(90deg, #06d6a0, #118ab2);">
+    </div>
   </div>
 </div>
 
@@ -211,10 +381,23 @@
     <div id="masteredSection"></div>
     <div id="levelSection"></div>
     
-   
+    <div class="row gx-4 gy-4">
+  <!-- Calendar Column -->
+  <div class="col-md-6">
+    <h4 class="section-title mb-3">🔥 Workout Streak Calendar</h4>
+    <div id="calendar" class="calendar-wrapper p-3 shadow-sm rounded-4 bg-white"></div>
+  </div>
 
-        <h5>Workout Streak Calendar</h5>
-        <div id="calendar" class="mb-4 d-flex flex-wrap gap-1"></div>
+  <div class="col-md-6">
+  <h4 class="section-title mb-3">💡 Motivation</h4>
+  <div id="slideshow" class="card shadow-sm rounded-4 overflow-hidden bg-primary bg-gradient" style="border: none; min-height: 300px;">
+    <div class="card-body d-flex justify-content-center align-items-center p-0">
+      <img id="slideshow-img" src="images/first.png" class="img-fluid rounded-3 shadow-lg" alt="Motivation Slide" 
+           style="width: 100%; height: 100%;">
+    </div>
+  </div>
+</div>
+
 
 
     <h4 class="mt-4">Workout Logs</h4>
@@ -539,13 +722,13 @@ function login() {
       loaderOverlay.style.display = "none";
       loginBtn.disabled = false;
       render();
+      startAutoLogoutTimer();
     }, 1200);
   } else {
     document.getElementById("loginError").textContent = "Invalid credentials.";
   }
 }
 
-function logout(){ user.loggedIn=false; saveUser(); render(); }
 
 function logSession(exId){
   const reps=parseInt(document.getElementById(`reps-${exId}`).value)||0;
@@ -592,6 +775,62 @@ function checkMastery(exId, reps, sets){
   }
 }
 
+function logout() {
+  const loader = document.getElementById("logoutLoader");
+  loader.style.display = "flex";  // show logout loader
+
+  setTimeout(() => {
+    user.loggedIn = false;
+    localStorage.setItem("pushUser", JSON.stringify(user));
+    saveUser(); render();
+    document.getElementById("dashboard").classList.add("hidden");
+    document.getElementById("loginPage").classList.remove("hidden");
+
+    loader.style.display = "none"; // hide loader
+  }, 800); // adjust time for smooth effect
+}
+
+
+function resetProgress() {
+  Swal.fire({
+    title: "Reset Progress?",
+    text: "This will permanently erase all your push-up logs and achievements.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#e63946",
+    cancelButtonColor: "#6c757d",
+    confirmButtonText: "Yes, Reset"
+  }).then(result => {
+    if(result.isConfirmed) {
+      // Show loader
+      document.getElementById("loader-overlay").style.display = "flex";
+
+      setTimeout(() => {
+        // Reset user data
+        user = { 
+          loggedIn:false, 
+          level:0, 
+          logs:[], 
+          totalPushups:0, 
+          streak:0, 
+          lastWorkoutDate:null, 
+          milestones:{}, 
+          masteredExercises:[] 
+        };
+        localStorage.setItem("pushUser", JSON.stringify(user));
+
+        // Hide loader
+        document.getElementById("loader-overlay").style.display = "none";
+
+        Swal.fire("Reset!", "Your progress has been cleared.", "success");
+      }, 1000); // simulate delay for visual effect
+    }
+  });
+}
+
+
+
+
 function togglePassword() {
   const passwordInput = document.getElementById("password");
   const eyeIcon = document.getElementById("eyeIcon");
@@ -606,12 +845,6 @@ function togglePassword() {
   }
 }
 
-function resetProgress(){ 
-  if(confirm("Reset all progress?")){
-    user={loggedIn:true,level:0,logs:[],totalPushups:0,streak:0,lastWorkoutDate:null,milestones:{},masteredExercises:[]};
-    saveUser(); render();
-  } 
-}
 
 function checkPromotion() {
   const level = LEVELS[user.level];
@@ -672,60 +905,98 @@ function renderMastered() {
     return;
   }
 
-  let html = `<div class="card mb-4 shadow-sm border-primary">
-    <div class="card-body">
-      <h4 class="mb-3 text-center text-primary fw-bold">🏅 Mastered Push-Ups</h4>
-      <div class="row g-3">`;
+  let html = `
+    <div class="card mb-4 shadow-sm border-0"
+         style="background: rgba(255,255,255,0.9);
+                backdrop-filter: blur(12px);
+                border-radius:20px;
+                box-shadow:0 8px 20px rgba(0,0,0,0.15);">
+      <div style="background: linear-gradient(135deg,#43cea2,#185a9d);
+                  color:white; padding:15px; border-radius:18px 18px 0 0;
+                  font-family:'Orbitron', sans-serif;
+                  text-align:center;">
+        <h4 class="mb-0 fw-bold">🏅 Mastered Push-Ups</h4>
+        <p class="small mb-0" style="font-style:italic;">Your trophy wall of strength</p>
+      </div>
+
+      <div class="card-body">
+        <div class="row g-4">
+  `;
 
   user.masteredExercises.forEach(id => {
     const ex = LEVELS.flatMap(lv => lv.exercises).find(e => e.id === id);
     if (ex) {
       html += `
         <div class="col-12 col-md-6 col-lg-4">
-          <div class="card h-100 border-success shadow-sm">
+          <div class="card h-100 border-0 shadow-sm"
+               style="border-radius:16px; transition:transform 0.25s, box-shadow 0.25s;"
+               onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 10px 25px rgba(0,0,0,0.2)';"
+               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';">
             <div class="card-body d-flex flex-column">
-              <h5 class="card-title text-success fw-bold">${ex.title} <span class="badge bg-success float-end">Mastered</span></h5>
-              <p class="card-text text-muted small flex-grow-1">${ex.notes}</p>
-              <a href="${ex.video}" target="_blank" class="btn btn-outline-success btn-sm mt-2 align-self-start">
+              <h5 class="card-title text-success fw-bold"
+                  style="font-family:'Poppins', sans-serif;">
+                ${ex.title}
+                <span class="badge bg-success ms-2">Mastered</span>
+              </h5>
+              <p class="card-text text-muted small flex-grow-1" 
+                 style="font-family:'Roboto Slab', serif;">
+                ${ex.notes}
+              </p>
+              <a href="${ex.video}" target="_blank" 
+                 class="btn btn-outline-success btn-sm mt-2 align-self-start fw-bold"
+                 style="border-radius:10px;">
                 🎥 Watch Tutorial
               </a>
             </div>
           </div>
-        </div>`;
+        </div>
+      `;
     }
   });
 
-  html += `</div></div></div>`;
+  html += `
+        </div>
+      </div>
+    </div>
+  `;
+
   container.innerHTML = html;
 }
+
 
 
 
 function renderLevel() {
   const level = LEVELS[user.level];
   const exercisesToShow = level.exercises.filter(ex => !user.masteredExercises.includes(ex.id));
+
   let html = `
-    <div class="card mb-4 shadow-sm border-info">
+    <div class="card mb-4 shadow border-0">
       <div class="card-body">
-        <h4 class="mb-2 text-info fw-bold">${level.name}</h4>
-        <p class="small"><strong>Progression rule:</strong> ${level.criteria}</p>
-        <div class="row g-3">
+        <h2 class="level-title mb-3 text-center">💪 ${level.name}</h2>
+        <p class="level-rule text-center"><strong>Rule:</strong> ${level.criteria}</p>
+        <div class="row g-4">
   `;
 
   exercisesToShow.forEach(ex => {
     html += `
       <div class="col-12 col-md-6 col-lg-4">
-        <div class="card h-100 shadow-sm border-primary">
+        <div class="exercise-card shadow h-100">
+          <div class="exercise-header">
+            <span>${ex.title}</span>
+          </div>
           <div class="card-body d-flex flex-column">
-            <h5 class="card-title fw-bold">${ex.title}</h5>
-            <p class="card-text text-muted small flex-grow-1">${ex.notes}</p>
-            <a href="${ex.video}" target="_blank" class="btn btn-outline-primary btn-sm mt-2 align-self-start">
+            <p class="exercise-notes flex-grow-1">${ex.notes}</p>
+            <a href="${ex.video}" target="_blank" 
+               class="btn btn-tutorial mt-2">
               🎥 Tutorial
             </a>
             <div class="input-group input-group-sm mt-3">
-              <input type="number" id="sets-${ex.id}" class="form-control" placeholder="Sets">
-              <input type="number" id="reps-${ex.id}" class="form-control" placeholder="Reps">
-              <button class="btn btn-primary" onclick="logSession('${ex.id}')">Log</button>
+              <span class="input-group-text">Sets</span>
+              <input type="number" id="sets-${ex.id}" class="form-control text-center" min="1" placeholder="0">
+              <span class="input-group-text">Reps</span>
+              <input type="number" id="reps-${ex.id}" class="form-control text-center" min="1" placeholder="0">
+              <button class="btn btn-log fw-bold" onclick="logSession('${ex.id}')">Log ✅</button>
             </div>
           </div>
         </div>
@@ -735,31 +1006,124 @@ function renderLevel() {
 
   html += `</div></div></div>`;
   document.getElementById("levelSection").innerHTML = html;
+
+  // Inject CSS & fonts once
+  if (!document.getElementById("levelCardStyles")) {
+    const style = document.createElement("style");
+    style.id = "levelCardStyles";
+    style.textContent = `
+      @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;500;700&display=swap');
+
+      .level-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2.5rem;
+        background: linear-gradient(90deg, #00c6ff, #0072ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .level-rule {
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.95rem;
+        color: #666;
+      }
+
+      .exercise-card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+
+      .exercise-card:hover {
+        transform: translateY(-6px) scale(1.02);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+      }
+
+      .exercise-header {
+        background: linear-gradient(135deg, #43cea2, #185a9d);
+        color: white;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        padding: 10px;
+        text-align: center;
+        font-size: 1.2rem;
+      }
+
+      .exercise-notes {
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.9rem;
+        color: #444;
+      }
+
+      .btn-tutorial {
+        background: #0072ff;
+        color: white;
+        font-weight: 600;
+        border-radius: 25px;
+        transition: background 0.3s ease;
+      }
+
+      .btn-tutorial:hover {
+        background: #0056b3;
+      }
+
+      .btn-log {
+        background: #28a745;
+        color: white;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+      }
+
+      .btn-log:hover {
+        background: #218838;
+        transform: scale(1.05);
+      }
+    `;
+    document.head.appendChild(style);
+  }
 }
 
 
 function renderLogs() {
   const todayStr = new Date().toDateString(); // e.g., "Wed Oct 01 2025"
-  // filter logs for today only
   const todaysLogs = user.logs.filter(l => new Date(l.date).toDateString() === todayStr);
 
+  const container = document.getElementById("logs");
   if (!todaysLogs.length) {
-    document.getElementById("logs").innerHTML = "<p class='text-muted small'>No logs yet for today.</p>";
+    container.innerHTML = `
+      <div class="card shadow-sm mb-3" style="border-radius:20px; backdrop-filter:blur(8px); background: rgba(255,255,255,0.85);">
+        <div class="card-body text-center">
+          <h5 class="fw-bold text-secondary mb-2" style="font-family: 'Poppins', sans-serif;">📅 Today's Workout Logs</h5>
+          <p class="text-muted small">No logs yet for today. Get moving! 💪</p>
+        </div>
+      </div>
+    `;
     return;
   }
 
-  let html = `<div class="card mb-3 shadow-sm"><div class="card-body">
-                <h5>Today's Workout Logs — ${todayStr}</h5>
-                <ul class="list-group list-group-flush small">`;
+  let html = `
+    <div class="card shadow-sm mb-3" style="border-radius:20px; backdrop-filter:blur(8px); background: rgba(255,255,255,0.9);">
+      <div class="card-body">
+        <h5 class="fw-bold mb-3" style="font-family: 'Poppins', sans-serif; color:#0072ff;">📅 Today's Workout Logs — ${todayStr}</h5>
+        <ul class="list-group list-group-flush small">
+  `;
 
   todaysLogs.forEach(l => {
     const ex = LEVELS.flatMap(lv => lv.exercises).find(e => e.id === l.exercise);
-    html += `<li class="list-group-item">${ex ? ex.title : l.exercise} — ${l.sets}×${l.reps}</li>`;
+    html += `
+      <li class="list-group-item d-flex justify-content-between align-items-center" style="border:none; border-bottom:1px solid #e0e0e0; font-family: 'Poppins', sans-serif;">
+        <span>💪 ${ex ? ex.title : l.exercise}</span>
+        <span class="badge bg-success rounded-pill">${l.sets}×${l.reps}</span>
+      </li>
+    `;
   });
 
   html += `</ul></div></div>`;
-  document.getElementById("logs").innerHTML = html;
+  container.innerHTML = html;
 }
+
 
 window.addEventListener("scroll", () => {
   const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
@@ -768,6 +1132,31 @@ window.addEventListener("scroll", () => {
   document.getElementById("scrollProgress").style.width = scrollPercent + "%";
 });
 
+
+let logoutTimer;
+
+function startAutoLogoutTimer() {
+  // Clear any existing timer first
+  if(logoutTimer) clearTimeout(logoutTimer);
+
+  // Set 10-minute timer (600,000 ms)
+  logoutTimer = setTimeout(() => {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Session Expired',
+      text: 'You have been logged out after 10 minutes of inactivity.',
+      timer: 2500,
+      showConfirmButton: false
+    }).then(() => {
+      logout();
+    });
+  }, 600000);
+}
+
+
+// Optional: Reset timer on user activity (click/keypress)
+document.addEventListener("click", startAutoLogoutTimer);
+document.addEventListener("keypress", startAutoLogoutTimer);
 
 function renderStats() {
   const level = LEVELS[user.level];
@@ -782,38 +1171,83 @@ function renderStats() {
   const nextLevel = user.level < LEVELS.length - 1 ? LEVELS[user.level + 1].name : "Maxed Out!";
 
   let html = `
-    <div class="card shadow-sm mb-3">
-      <div class="card-body">
-        <h5>Progress Overview</h5>
-        <p><strong>Total Pushups:</strong> ${totalPushups}</p>
-        <p><strong>Streak:</strong> 🔥 ${streak} day(s)</p>
-        <p><strong>Next Level:</strong> ${nextLevel}</p>
-        <div class="progress mb-2">
-          <div class="progress-bar bg-success" role="progressbar"
-               style="width:${progressPercent}%"
-               aria-valuenow="${progressPercent}" aria-valuemin="0" aria-valuemax="100">
-            ${progressPercent}%
-          </div>
+    <div class="stats-card" style="
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      position: relative;
+      font-family: 'Poppins', sans-serif;
+    ">
+      <div style="background: linear-gradient(135deg,#ff512f,#dd2476);
+                  color:white; padding:12px 18px;
+                  border-radius:14px; margin-bottom:18px;
+                  font-family: 'Orbitron', sans-serif;
+                  letter-spacing: 1px;">
+        <h5 class="mb-0" style="font-weight:700; font-size:1.3rem;">
+          📊 Progress Overview
+        </h5>
+      </div>
+
+      <p style="font-size:1rem;"><strong>Total Pushups:</strong> <span class="text-success fw-bold" style="font-family:'Roboto Slab', serif;">${totalPushups}</span></p>
+      <p style="font-size:1rem;"><strong>Streak:</strong> <span class="text-danger fw-bold" style="font-family:'Roboto Slab', serif;">🔥 ${streak} day(s)</span></p>
+      <p style="font-size:1rem;"><strong>Next Level:</strong> <span class="text-info fw-bold" style="font-family:'Roboto Slab', serif;">${nextLevel}</span></p>
+
+      <!-- Striped & Animated Progress Bar -->
+      <div class="progress mb-3" style="height: 25px; border-radius: 14px; overflow:hidden;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success fw-bold"
+             role="progressbar"
+             style="width:${progressPercent}%; font-size:0.9rem; font-family:'Orbitron', sans-serif;">
+          ${progressPercent}%
         </div>
-        <p class="small text-muted">${masteredCount}/${totalExercises} exercises mastered in this level</p>
+      </div>
+
+      <p class="small text-muted" style="font-style:italic;">
+        ${masteredCount}/${totalExercises} exercises mastered in this level
+      </p>
   `;
 
-  // show milestones only if unlocked
+  // show milestones if unlocked
   const unlocked = Object.keys(user.milestones).filter(id => user.milestones[id]);
   if (unlocked.length) {
-    html += `<h6>Milestones:</h6><ul class="list-group small">`;
+    html += `<h6 class="fw-bold text-success mt-3" style="font-family:'Orbitron', sans-serif; font-size:1.1rem;">
+               🏆 Achievements
+             </h6>
+             <div style="display:flex; flex-wrap:wrap; gap:10px;">`;
     unlocked.forEach(id => {
       const ms = MILESTONES.find(m => m.id === id);
       if (ms) {
-        html += `<li class="list-group-item list-group-item-success">🏅 ${ms.text}</li>`;
+        html += `<div style="
+          background:#fff;
+          border:2px solid #28a745;
+          border-radius:12px;
+          padding:10px 14px;
+          font-size:0.9rem;
+          font-weight:600;
+          font-family:'Poppins', sans-serif;
+          color:#28a745;
+          box-shadow:0 2px 6px rgba(0,0,0,0.1);
+          transition:transform 0.2s;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          🏅 ${ms.text}
+        </div>`;
       }
     });
-    html += `</ul>`;
+    html += `</div>`;
   }
 
-  html += `</div></div>`;
+  // motivational line
+  html += `<p class="mt-4 text-center fw-bold" 
+              style="color:#dd2476; font-family:'Orbitron', sans-serif; font-size:1.1rem;">
+            🚀 Keep pushing, greatness is one rep away!
+           </p>`;
+
+  html += `</div>`;
   document.getElementById("statsSection").innerHTML = html;
 }
+
+
 
 function renderCalendar() {
   const calendarEl = document.getElementById("calendar");
@@ -828,38 +1262,37 @@ function renderCalendar() {
   const totalDays = lastDay.getDate();
 
   let html = `
-    <div class="card shadow-sm h-100">
+    <div class="card shadow calendar-card">
       <div class="card-body">
-        <h5 class="mb-3 text-center">${now.toLocaleString("default", { month: "long" })} ${year}</h5>
+        <h3 class="calendar-title text-center mb-3">${now.toLocaleString("default", { month: "long" })} ${year}</h3>
         <div class="table-responsive">
-          <table class="table table-bordered text-center">
-          <thead class="table-light">
-            <tr>
-              <th>Sun</th><th>Mon</th><th>Tue</th>
-              <th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
-            </tr>
-          </thead>
-          <tbody>
+          <table class="table table-borderless text-center">
+            <thead>
+              <tr>
+                <th>Sun</th><th>Mon</th><th>Tue</th>
+                <th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+              </tr>
+            </thead>
+            <tbody>
   `;
 
   let day = 1;
   for (let row = 0; row < 6; row++) {
     html += "<tr>";
     for (let col = 0; col < 7; col++) {
-      if (row === 0 && col < startDay) {
-        html += "<td></td>";
-      } else if (day > totalDays) {
+      if (row === 0 && col < startDay || day > totalDays) {
         html += "<td></td>";
       } else {
-        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        const dateStr = `${year}-${String(month + 1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
         const logged = user.logs.some(l => new Date(l.date).toDateString() === new Date(dateStr).toDateString());
 
         html += `
           <td>
-            <div class="day-circle ${logged ? 'bg-success' : 'bg-danger'} text-white">
+            <div class="day-circle ${logged ? 'logged' : 'not-logged'}">
               ${day}
             </div>
-          </td>`;
+          </td>
+        `;
         day++;
       }
     }
@@ -868,44 +1301,148 @@ function renderCalendar() {
   }
 
   html += `
-          </tbody>
-        </table>
-        <div class="d-flex justify-content-center gap-3 small mt-2">
-          <span><span class="legend-box bg-success"></span> Logged</span>
-          <span><span class="legend-box bg-danger"></span> Not Logged</span>
+            </tbody>
+          </table>
+          <div class="d-flex justify-content-center gap-3 mt-3 legend">
+            <span><span class="legend-box logged"></span> Logged</span>
+            <span><span class="legend-box not-logged"></span> Not Logged</span>
+          </div>
         </div>
       </div>
     </div>
   `;
 
   calendarEl.innerHTML = html;
+
+  // Add custom styles once
+  if (!document.getElementById("calendarStyles")) {
+    const style = document.createElement("style");
+    style.id = "calendarStyles";
+    style.textContent = `
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
+
+      .calendar-card {
+        border-radius: 20px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.9);
+        backdrop-filter: blur(8px);
+      }
+
+      .calendar-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 1.8rem;
+        color: #0072ff;
+      }
+
+      table {
+        table-layout: fixed;
+      }
+
+      th {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        color: #555;
+        font-size: 0.95rem;
+      }
+
+      td {
+        padding: 8px;
+      }
+
+      .day-circle {
+        width: 38px;
+        height: 38px;
+        line-height: 38px;
+        border-radius: 50%;
+        font-weight: 600;
+        font-family: 'Poppins', sans-serif;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .day-circle.logged {
+        background: linear-gradient(135deg, #28a745, #218838);
+        color: white;
+        box-shadow: 0 4px 10px rgba(40,167,69,0.4);
+      }
+
+      .day-circle.not-logged {
+        background: #dc3545;
+        color: white;
+        box-shadow: 0 4px 10px rgba(220,53,69,0.4);
+      }
+
+      .day-circle:hover {
+        transform: scale(1.15);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+        cursor: pointer;
+      }
+
+      .legend {
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.9rem;
+      }
+
+      .legend-box {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        margin-right: 5px;
+        vertical-align: middle;
+      }
+
+      .legend-box.logged {
+        background: linear-gradient(135deg, #28a745, #218838);
+      }
+
+      .legend-box.not-logged {
+        background: #dc3545;
+      }
+    `;
+    document.head.appendChild(style);
+  }
 }
 
 
 
 function saveUser(){ localStorage.setItem("pushUser",JSON.stringify(user)); }
 
-function rotateQuotes(){
-  let i=0;
-  const motivation=document.getElementById("motivation");
-  motivation.textContent=QUOTES[i];
-  setInterval(()=>{
-    motivation.style.opacity=0;
-    setTimeout(()=>{
-      motivation.textContent=QUOTES[i];
-      motivation.style.opacity=1;
-      if(i % 3 === 0) { motivation.classList.add("highlight"); }
-      else { motivation.classList.remove("highlight"); }
-      i=(i+1)%QUOTES.length;
-    },800);
-  },5000);
+function rotateQuotes() {
+  let i = 0;
+  const motivation = document.getElementById("motivation");
+
+  // Initial quote
+  motivation.textContent = QUOTES[i];
+  motivation.style.opacity = 1;
+
+  setInterval(() => {
+    // Fade out
+    motivation.style.transition = "opacity 0.8s ease";
+    motivation.style.opacity = 0;
+
+    setTimeout(() => {
+      // Change quote
+      i = (i + 1) % QUOTES.length;
+      motivation.textContent = QUOTES[i];
+
+      // Highlight special quotes
+      if (i % 3 === 0) {
+        motivation.classList.add("highlight");
+      } else {
+        motivation.classList.remove("highlight");
+      }
+
+      // Fade in
+      motivation.style.opacity = 1;
+    }, 800);
+  }, 5000);
 }
+
 
 render();
 rotateQuotes();
 </script>
 </body>
 </html>
-
-
 
